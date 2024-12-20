@@ -12,6 +12,22 @@ pub struct ASGraphInfo {
     pub ixp_asns: HashSet<u32>,
     pub input_clique_asns: HashSet<u32>,
 }
+impl ASGraphInfo {
+    pub fn asns(&self) -> HashSet<u32> {
+        let mut asns = HashSet::new();
+        for link in &self.customer_provider_links {
+            asns.insert(link.customer_asn);
+            asns.insert(link.provider_asn);
+        }
+        for link in &self.peer_links {
+            asns.insert(link.peer1_asn);
+            asns.insert(link.peer2_asn);
+        }
+        asns.extend(&self.ixp_asns);
+        asns.extend(&self.input_clique_asns);
+        asns
+    }
+}
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct CustomerProviderLink {

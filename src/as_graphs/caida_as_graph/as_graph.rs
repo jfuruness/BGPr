@@ -70,10 +70,40 @@ impl ASGraph {
         graph.set_as_groups();
         graph
     }
-
     fn generate_graph(&mut self, as_graph_info: &ASGraphInfo) {
-        for &asn in as_graph_info.input_clique_asns.iter().chain(as_graph_info.ixp_asns.iter()) {
-            self.as_dict.entry(asn).or_insert_with(|| Box::new(AutonomousSystem::new(asn, true, false)));
+        fn gen_as(asn: u32, graph: &mut ASGraph) -> *mut AutonomousSystem {
+            let as_obj = Box::new(AutonomousSystem::new(asn, false, false));
+            let ptr = Box::into_raw(as_obj);
+            graph.as_dict.insert(asn, unsafe { Box::from_raw(ptr) });
+            ptr
+        }
+
+        for asn in as_graph_info.asns() {
+            if !self.as_dict.contains_key(&asn) {
+                gen_as(asn, self);
+            }
+        }
+
+        for &asn in &as_graph_info.ixp_asns {
+            let as_ptr = if let Some(as_obj) = self.as_dict.get_mut(&asn) {
+                as_obj.as_mut() as *mut _
+            } else {
+                gen_as(asn, self)
+            };
+            unsafe {
+                (*as_ptr).ixp = true;
+            }
+        }
+
+        for &asn in &as_graph_info.input_clique_asns {
+            let as_ptr = if let Some(as_obj) = self.as_dict.get_mut(&asn) {
+                as_obj.as_mut() as *mut _
+            } else {
+                gen_as(asn, self)
+            };
+            unsafe {
+                (*as_ptr).input_clique = true;
+            }
         }
     }
 

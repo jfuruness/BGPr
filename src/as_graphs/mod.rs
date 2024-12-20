@@ -2,4 +2,4 @@ pub mod base;
 pub mod caida_as_graph;
 
 pub use base::{BaseASGraphCollector, ASGraphCollector};
-pub use caida_as_graph::{CAIDAASGraphCollector, CAIDAASGraphConstructor};
+pub use caida_as_graph::{CAIDAASGraphCollector, CAIDAASGraphConstructor, AutonomousSystem, ASGraph};
