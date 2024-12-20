@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::as_graphs::caida_as_graph::{ASGraphInfo, CustomerProviderLink, PeerLink};
+use crate::as_graphs::caida_as_graph::bgp::{BGP};
 
 
 #[derive(Debug)]
@@ -12,11 +13,12 @@ pub struct AutonomousSystem {
     pub providers: Vec<*mut AutonomousSystem>,
     pub customers: Vec<*mut AutonomousSystem>,
     pub propagation_rank: Option<u32>,
+    pub policy: BGP,
 }
 
 impl AutonomousSystem {
     pub fn new(asn: u32, input_clique: bool, ixp: bool) -> Self {
-        Self {
+        let mut autonomous_system = Self {
             asn,
             input_clique,
             ixp,
@@ -24,7 +26,12 @@ impl AutonomousSystem {
             providers: Vec::new(),
             customers: Vec::new(),
             propagation_rank: None,
-        }
+            policy: BGP::new(std::ptr::null()), // Temporarily set to null
+        };
+        // Correctly set the policy to reference this AutonomousSystem
+        autonomous_system.policy = BGP::new(&autonomous_system as *const AutonomousSystem);
+
+        autonomous_system
     }
 
     pub fn is_stub(&self) -> bool {
