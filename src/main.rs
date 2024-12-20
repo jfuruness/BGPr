@@ -1,6 +1,6 @@
 use std::fs::create_dir_all;
 use std::path::PathBuf;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Duration, Utc, TimeZone};
 use platform_dirs::AppDirs;
 use std::fs;
 use log::error;
@@ -96,9 +96,10 @@ define_base_asgraph_collector!(CAIDAASGraphCollector);
 // Here you add your custom run logic.
 impl ASGraphCollector for CAIDAASGraphCollector {
     fn default_dl_time() -> chrono::DateTime<chrono::Utc> {
-        let today = Utc::now().date();
+        let today = Utc::now().date_naive();
         let target_date = today - Duration::days(10);
-        target_date.and_hms_micro(0, 0, 0, 0)
+        let midnight = target_date.and_hms_micro_opt(0, 0, 0, 0).unwrap();
+        Utc.from_utc_datetime(&midnight)
     }
 
     fn _run(&self) -> Result<PathBuf, Box<dyn std::error::Error>> {
