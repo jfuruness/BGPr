@@ -5,5 +5,9 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.39"
+bzip2 = "0.4"
 log = "0.4.22"
 platform-dirs = "0.3.0"
+reqwest = { version = "0.12.9", features = ["blocking"] }
+scraper = "0.22.0"
+tempfile = "3.14.0"
