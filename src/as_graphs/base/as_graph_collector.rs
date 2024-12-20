@@ -43,7 +43,6 @@ macro_rules! define_base_asgraph_collector {
     ($name:ident) => {
         pub struct $name {
             dl_time: chrono::DateTime<chrono::Utc>,
-            cache_dir: std::path::PathBuf,
             cache_path: std::path::PathBuf,
         }
 
@@ -76,7 +75,6 @@ macro_rules! define_base_asgraph_collector {
 
                 Self {
                     dl_time,
-                    cache_dir,
                     cache_path,
                 }
             }
